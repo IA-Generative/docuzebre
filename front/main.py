@@ -11,6 +11,10 @@ options = {
     "Essai sur le modèle": display_tab3,
 }
 
+# st.markdown("""
+#     <base href="/proxy/8501/">
+#     """, unsafe_allow_html=True)
+
 if not st.session_state.get("models_dict"):
     st.session_state["models_dict"] = {}
 

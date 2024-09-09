@@ -26,7 +26,7 @@ def display_tab():
 
     current_model: DynamicModel = st.session_state["current_model"]
 
-    current_model.name = st.text_input("Nom du modèle", value=current_model.name)
+    current_model.name = st.text_input(label="Nom du modèle", value=current_model.name, key="model_name")
     available_type = list(base_defined_type.keys()) + [
         model
         for model in st.session_state["models_dict"]
@@ -79,11 +79,11 @@ def display_tab():
                 on_click=functools.partial(current_model.suppress_field, idx=idx),
             )
 
-    st.button("Ajouter un champ", on_click=lambda: current_model.add_field())
+    st.button("Ajouter un champ", key="add_field", on_click=lambda: current_model.add_field())
 
     st.divider()
 
-    if st.button("Enregistrer ou mettre à jour le modèle"):
+    if st.button("Enregistrer ou mettre à jour le modèle", key="save"):
         tmp_list = [field.name for field in current_model.fields]
         cond = len(set(tmp_list)) == len(tmp_list)
         if not cond:
@@ -96,10 +96,11 @@ def display_tab():
 
     st.divider()
 
-    if st.button("Générer le prompt pour le modèle"):
+    if st.button("Générer le prompt pour le modèle", key="generate_prompt"):
         if current_model.name not in st.session_state["models_dict"]:
             st.error("Fonctionnalité disponible pour les modèles enregistrés")
         else:
+
             result = generate_model(
                 st.session_state["current_model"], st.session_state["models_dict"]
             )

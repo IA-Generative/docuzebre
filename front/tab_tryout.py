@@ -45,8 +45,9 @@ def display_tab():
             "Parser le texte",
             on_click=lambda: parse_txt(
                 st.session_state["user_input"],
-                st.session_state["models_dict"][st.session_state["model_selectbox"]],
+                st.session_state["models_dict"][st.session_state["model_selectbox"]]
             ),
+            key="parse"
         )
 
     with col_llm:

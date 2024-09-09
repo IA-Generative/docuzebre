@@ -60,7 +60,7 @@ def display_tab():
             col1, col2 = st.columns([0.8, 0.2])
             with col1:
                 st.write("Texte de l'exemple")
-                st.write(example[0][0])
+                st.write(example[0])
                 st.write("Json de l'exemple")
                 st.write(example[1])
             with col2:
