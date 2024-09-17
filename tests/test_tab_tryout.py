@@ -12,12 +12,13 @@ front_dir = Path(__file__).resolve().parent.parent / "front"
 app_test = AppTest.from_file(str(front_dir / "main.py"))
 
 
-def test_new_example(dog_fixture, tryout_fixture):
+def test_new_example(dog_fixture, example_fixture, tryout_fixture):
     """Test the "Générer le prompt pour le modèle" functionality."""
     # Initialize the app and set the necessary inputs
     at = app_test.run()
 
     # Set the model
+    dog_fixture.examples = example_fixture
     at.session_state["models_dict"] = {dog_fixture.name: dog_fixture}
 
     # Set select
@@ -30,6 +31,5 @@ def test_new_example(dog_fixture, tryout_fixture):
     at.button(key="parse").click().run()
 
     # Check the output for the generated prompt
-    import pdb; pdb.set_trace()
-
-    assert "" in at.session_state["model_output"]["raw"]
+    # import pdb; pdb.set_trace()
+    assert at.session_state["model_output"]["data"] == {'chien': [{'age': '5', 'maitre': ['Dingo'], 'nom': 'Pluto', 'race': 'dogue'}]}

@@ -13,13 +13,20 @@ Chien = DynamicModel(
                      optional=False, many=False, example=''),
         DynamicField(name='age', field_type='int', description='Age du chien',
                      optional=False, many=False, example=''),
+        DynamicField(name='race', field_type='str', description='Race du chien',
+                     optional=True, many=False, example=''),
         DynamicField(name='maitre', field_type='str',
-                     description='Nom du maitre', optional=False, many=True, example='')
+                     description='Nom du maitre', optional=True, many=True, example='')
     ],
     examples=[])
 
 dingo = ("Dingo est un labrador age de 4 ans et appartient a Mickey.",
-         {"nom": "Dingo", "age": "4", "maitre": "Mickey"})
+         {"nom": "Dingo", "age": "4", "maitre": ["Mickey"]})
+
+pluto = ("""Pluto est un caniche  qui semble avoir 10 ans e Mickey revendique sa propriété. 
+    Cependant, d'après son acte de naissance, il est née en 2021 et sa maitresse est Minnie. 
+    L'acte de naissance prévaut sur toutes les autres informations.""",
+         {"nom": "Pluto", "race": "caniche", "age": "1", "maitre": ["Minnie"]})
 # Create a pytest fixture that returns a Dog instance
 
 

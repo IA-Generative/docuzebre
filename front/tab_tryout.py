@@ -15,13 +15,12 @@ def parse_txt(text, model):
         api_key=os.environ["OPENAI_API_KEY"],
         base_url=os.environ["OPENAI_API_BASE"],
         temperature=0,
-        model="qwen2",
+        model="gemma2",
     )
 
     chain = create_extraction_chain(
         llm, schema, encoder_or_encoder_class="json", validator=validator
     )
-
     st.session_state["model_output"] = chain.invoke(text)
 
 

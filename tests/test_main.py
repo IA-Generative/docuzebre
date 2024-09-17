@@ -11,8 +11,11 @@ front_dir = Path(__file__).resolve().parent.parent / "front"
 
 app_test = AppTest.from_file(str(front_dir / "main.py"))
 
+
 def test_model_selection_and_update():
-    
+    return
+
+
 # Test for uploading and loading the session file
 def test_upload_file():
     """Simulates uploading a file and checks if models are loaded correctly"""
@@ -25,7 +28,8 @@ def test_upload_file():
     # Set select
     at.selectbox(key="tab_selectbox").set_value("Essai sur le modèle").run()
     # TDB
-    
+
+
 # Test for tab selection functionality
 def test_tab_selection(dog_fixture):
     """Simulates selecting a tab and checks if the correct tab is displayed"""
