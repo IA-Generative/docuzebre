@@ -3,9 +3,9 @@ from pydantic import BaseModel
 from pathlib import Path
 from docuzebre.model_generation import DynamicModel
 from docuzebre.inference import infer
-import json
+import json, os
 
-app = FastAPI(root_path="/absproxy/5000")
+app = FastAPI(root_path=os.getenv("ROOT_PATH", "/"))
 
 # Directory to store models as JSON files using pathlib
 MODEL_DIR = Path("models")
