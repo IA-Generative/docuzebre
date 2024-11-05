@@ -1,7 +1,7 @@
 # include .env
 dummy		    := $(shell touch .env)
 include .env
-export PYTHONPATH=$(PWD)
+export PYTHONPATH:=$(PWD)
 export $(shell sed 's/=.*//' .env)
 
 install: 
