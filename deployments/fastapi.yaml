@@ -20,9 +20,11 @@ spec:
       containers:
       - name: fastapi
         image: PLACEHOLDER_FOR_IMAGE
+        command: ["uv"]
+        args: ["run", "uvicorn", "api.app:app"]
         imagePullPolicy: Always
         ports:
-        - containerPort: 5000
+        - containerPort: 8000
         volumeMounts:
         - name: model-data
           mountPath: /app/models
@@ -46,24 +48,23 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 5000
+    targetPort: 8000
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: PLACEHOLDER_FOR_NAME
-  namespace: PLACEHOLDER_FOR_NAMESPACE
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/session-cookie-hash: sha1
     nginx.ingress.kubernetes.io/session-cookie-name: route
+  name: api-PLACEHOLDER_FOR_URL
 spec:
   ingressClassName: public
   rules:
-  - host: api-PLACEHOLDER_FOR_URL
+  - host: api.PLACEHOLDER_FOR_URL
     http:
       paths:
       - path: /
@@ -75,5 +76,5 @@ spec:
               number: 80
   tls:
   - hosts:
-    - PLACEHOLDER_FOR_URL
-    secretName: PLACEHOLDER_FOR_URL-tls
+    - api.PLACEHOLDER_FOR_URL
+    secretName: api.PLACEHOLDER_FOR_URL-tls

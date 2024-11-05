@@ -23,7 +23,7 @@ spec:
         imagePullPolicy: Always
         env:
           - name: API_URL
-            value: "http://PLACEHOLDER_FOR_API.PLACEHOLDER_FOR_NAMESPACE.svc.cluster.local"
+            value: "http://api-PLACEHOLDER_FOR_API.PLACEHOLDER_FOR_NAMESPACE.svc.cluster.local"
           - name: PADDLE_OCR_TOKEN
             valueFrom:
               secretKeyRef:
@@ -69,14 +69,13 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: PLACEHOLDER_FOR_NAME
-  namespace: PLACEHOLDER_FOR_NAMESPACE
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/session-cookie-hash: sha1
     nginx.ingress.kubernetes.io/session-cookie-name: route
+  name: PLACEHOLDER_FOR_URL
 spec:
   ingressClassName: public
   rules:

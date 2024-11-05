@@ -93,8 +93,8 @@ jobs:
             URL="docuzebre.c0.cloud-pi-native.com"
             NAME="docuzebre"
           else
-            URL="docuzebre-staging.c0.cloud-pi-native.com"
-            NAME="docuzebre-staging"
+            URL="staging-docuzebre.c0.cloud-pi-native.com"
+            NAME="docuzebre"
           fi
           # Declare an array of services
           services=("fastapi" "streamlit")
@@ -109,7 +109,7 @@ jobs:
             sed -i "s|PLACEHOLDER_FOR_NAMESPACE|${NAMESPACE}|g" $DEPLOYMENT_FILE
             sed -i "s|PLACEHOLDER_FOR_URL|${URL}|g" $DEPLOYMENT_FILE
             sed -i "s|PLACEHOLDER_FOR_NAME|${SERVICE_NAME}|g" $DEPLOYMENT_FILE
-            sed -i "s|PLACEHOLDER_FOR_API|api-${NAME}|g" $DEPLOYMENT_FILE
+            sed -i "s|PLACEHOLDER_FOR_API|${NAME}|g" $DEPLOYMENT_FILE
 
             # Display updated deployment file
             cat ./$DEPLOYMENT_FILE
