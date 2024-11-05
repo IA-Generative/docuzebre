@@ -101,16 +101,16 @@ jobs:
 
           # Loop through services to update and deploy
           for service in "${services[@]}"; do
-            SERVICE_NAME="${NAME}-${service}"
-            DEPLOYMENT_FILE="deployments/deployment-${service}.yaml"
-
+            DEPLOYMENT_FILE="deployments/${service}.yaml"
+            SERVICE_NAME=${service}-${NAME}
             # Update deployment file
             sed -i "s|PLACEHOLDER_FOR_IMAGE_HASH|${IMAGE_HASH}|g" $DEPLOYMENT_FILE
             sed -i "s|PLACEHOLDER_FOR_IMAGE|${IMAGE_LOWERCASE}|g" $DEPLOYMENT_FILE
             sed -i "s|PLACEHOLDER_FOR_NAMESPACE|${NAMESPACE}|g" $DEPLOYMENT_FILE
-            sed -i "s|PLACEHOLDER_FOR_URL|${service}-${URL}|g" $DEPLOYMENT_FILE
-            sed -i "s|PLACEHOLDER_FOR_NAME_|${SERVICE_NAME}|g" $DEPLOYMENT_FILE
-            
+            sed -i "s|PLACEHOLDER_FOR_URL|${URL}|g" $DEPLOYMENT_FILE
+            sed -i "s|PLACEHOLDER_FOR_NAME|${SERVICE_NAME}|g" $DEPLOYMENT_FILE
+            sed -i "s|PLACEHOLDER_FOR_API|api-${NAME}|g" $DEPLOYMENT_FILE
+
             # Display updated deployment file
             cat ./$DEPLOYMENT_FILE
             

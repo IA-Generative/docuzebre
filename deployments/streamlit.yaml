@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: PLACEHOLDER_FOR_NAME_-streamlit
+  name: PLACEHOLDER_FOR_NAME
   namespace: PLACEHOLDER_FOR_NAMESPACE
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: PLACEHOLDER_FOR_NAME_-streamlit
+      app: PLACEHOLDER_FOR_NAME
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: PLACEHOLDER_FOR_NAME_-streamlit
+        app: PLACEHOLDER_FOR_NAME
       annotations:
         redeploy-hash: PLACEHOLDER_FOR_IMAGE_HASH
     spec:
@@ -23,7 +23,27 @@ spec:
         imagePullPolicy: Always
         env:
           - name: API_URL
-            value: "http://PLACEHOLDER_FOR_NAME_-api-service"
+            value: "http://PLACEHOLDER_FOR_API.PLACEHOLDER_FOR_NAMESPACE.svc.cluster.local"
+          - name: PADDLE_OCR_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: PADDLE_OCR_TOKEN
+          - name: OCR_URL
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: PADDLE_OCR_URL
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OPENAI_API_KEY
+          - name: OPENAI_API_BASE
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OPENAI_API_BASE
         ports:
         - containerPort: 8080
       dnsPolicy: ClusterFirst
@@ -35,11 +55,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: PLACEHOLDER_FOR_NAME_-streamlit-service
+  name: PLACEHOLDER_FOR_NAME
   namespace: PLACEHOLDER_FOR_NAMESPACE
 spec:
   selector:
-    app: PLACEHOLDER_FOR_NAME_-streamlit
+    app: PLACEHOLDER_FOR_NAME
   ports:
   - protocol: TCP
     port: 80
@@ -49,7 +69,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: PLACEHOLDER_FOR_NAME_-streamlit-ingress
+  name: PLACEHOLDER_FOR_NAME
   namespace: PLACEHOLDER_FOR_NAMESPACE
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -67,7 +87,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: PLACEHOLDER_FOR_NAME_-streamlit-service
+            name: PLACEHOLDER_FOR_NAME
             port:
               number: 80
   tls:
