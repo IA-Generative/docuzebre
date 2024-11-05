@@ -1,28 +1,11 @@
-import os
-from model_generation import generate_model
+from docuzebre.inference import infer
 import streamlit as st
-from kor import from_pydantic, create_extraction_chain
-from langchain_openai import ChatOpenAI
+from utils import request_ocr
 
 
-def parse_txt(text, model):
-
-    model_pydantic = generate_model(model, st.session_state["models_dict"])
-    schema, validator = from_pydantic(
-        model_pydantic, description="", examples=model.examples, many=True
-    )
-    llm = ChatOpenAI(
-        api_key=os.environ["OPENAI_API_KEY"],
-        base_url=os.environ["OPENAI_API_BASE"],
-        temperature=0,
-        model="gemma2",
-    )
-
-    chain = create_extraction_chain(
-        llm, schema, encoder_or_encoder_class="json", validator=validator
-    )
-    st.session_state["model_output"] = chain.invoke(text)
-
+def parse_txt(text, model_name):
+    result = infer(model_name, st.session_state["models_dict"], text)
+    st.session_state["model_output"] = result 
 
 def display_tab():
     if st.session_state.get("model_output") is None:
@@ -39,12 +22,25 @@ def display_tab():
     col_user, col_llm = st.columns(2)
 
     with col_user:
-        st.text_area(label="Veuillez entrer le texte à parser", key="user_input")
+     
+        # Initial user input handling
+        if 'user_input' not in st.session_state:
+            st.session_state.user_input = ""  # Initialize the key in session_state
+
+        # File upload and OCR request handling
+        file = st.file_uploader("Téléverser votre document", type=["pdf", "jpeg", "jpg", "png"])
+        if file:
+            text_ocr = request_ocr(st, file)
+            st.session_state.user_input = text_ocr  # Update session state with OCR result
+
+        # Text area to display or enter text to parse
+        st.text_area(label="Veuillez entrer le texte à parser", key="user_input", height=600)
+
         st.button(
             "Parser le texte",
             on_click=lambda: parse_txt(
                 st.session_state["user_input"],
-                st.session_state["models_dict"][st.session_state["model_selectbox"]]
+                st.session_state["model_selectbox"]
             ),
             key="parse"
         )

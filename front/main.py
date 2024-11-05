@@ -2,18 +2,50 @@ import streamlit as st
 from tab_model_generation import display_tab as display_tab1
 from tab_example import display_tab as display_tab2
 from tab_tryout import display_tab as display_tab3
-from model_generation import DynamicModel
+from docuzebre.model_generation import DynamicModel
+from utils import load_from_api
 import json
+import os
 
-options = {
-    "Génération de modèles": display_tab1,
-    "Saisie d'example": display_tab2,
-    "Essai sur le modèle": display_tab3,
-}
 
-# st.markdown("""
-#     <base href="/proxy/8501/">
-#     """, unsafe_allow_html=True)
+def display_tab4():
+    return st.components.v1.iframe(f"https://user-astree-940072-0.c0.cloud-pi-native.com/absproxy/5000/docs", height=600, scrolling=True)
+
+
+pages = [
+    {
+        "title": "Génération d'un modèle de données",
+        "function": display_tab1,
+        "icon": "🔧",
+    },
+    {
+        "title": "Saisie d'example",
+        "function": display_tab2,
+        "icon": "📝",
+    },
+    {
+        "title": "Tester l'extraction",
+        "function": display_tab3,
+        "icon": "🔍",
+    },
+    {
+        "title": "Voir l'API",
+        "function": display_tab4,
+        "icon": "🌐",
+    }
+]
+
+st.set_page_config(
+    page_title="Docuzebre",
+    page_icon="🦓",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    }
+)
 
 if not st.session_state.get("models_dict"):
     st.session_state["models_dict"] = {}
@@ -34,32 +66,41 @@ def upload_file():
         st.session_state["models_dict"][model.name] = model
 
 
-st.sidebar.selectbox(
+st.sidebar.radio(
     label="Modeles Disponibles",
     options=(st.session_state["models_dict"] or []),
     key="model_selectbox",
     on_change=update_selectbox,
 )
 
+
+with st.sidebar.expander("Importer une session"):
+    st.file_uploader(
+        label="Charger depuis son ordinateur",
+        on_change=lambda: upload_file(),
+        key="session_uploader",
+        type="json"
+    )
+
+    st.button(
+        label="Charger depuis le serveur",
+        on_click=lambda: load_from_api(st),
+        key="session_api")
+
+
 st.sidebar.download_button(
-    label="Sauvegarder la session",
+    label="Télécharger la session",
     data=json.dumps(
         [model.to_json() for model in st.session_state["models_dict"].values()]
     ),
     file_name="Sauvegarde_session.json",
 )
 
-st.sidebar.file_uploader(
-    label="Uploader une session",
-    on_change=lambda: upload_file(),
-    key="session_uploader",
-)
+# options[st.session_state["tab_selectbox"]]()
 
-st.selectbox(
-    label="Séléction d'onglet",
-    options=options.keys(),
-    key="tab_selectbox",
-    label_visibility="hidden",
-)
+pg = st.navigation([
+    st.Page(page["function"], title=page["title"], icon=page["icon"], url_path=f"/{page["title"].replace(' ', '-').lower()}" )
+    for page in pages
+])
 
-options[st.session_state["tab_selectbox"]]()
+pg.run()

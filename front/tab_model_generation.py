@@ -1,9 +1,11 @@
 import functools
-from model_generation import generate_model, DynamicModel, base_defined_type
+from docuzebre.model_generation import generate_model, DynamicModel, base_defined_type
 from copy import deepcopy
 from kor import from_pydantic, create_extraction_chain
 from langchain_openai import ChatOpenAI
 import streamlit as st
+import time
+from utils import save_model
 
 
 def generate_key(current_model, current_field, attr):
@@ -92,8 +94,10 @@ def display_tab():
             st.session_state["models_dict"][current_model.name] = deepcopy(
                 current_model
             )
-            st.rerun()
 
+            save_model(current_model, st)
+            time.sleep(1)
+            st.rerun()
     st.divider()
 
     if st.button("Générer le prompt pour le modèle", key="generate_prompt"):

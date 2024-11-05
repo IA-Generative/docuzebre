@@ -13,8 +13,16 @@ dependencies = [
     "langchain>=0.2.15",
     "langchain-core>=0.2.37",
     "pytest",
-    "python-dotenv"
+    "python-dotenv",
+    "fastapi",
+    "python-multipart",
+    "uvicorn",
+    "langchain-community"
 ]
+
+[tool.setuptools]
+py-modules = ["docuzebre"]
+
 [tool.pytest.ini_options]
 pythonpath = "front"
 testpaths = "tests"

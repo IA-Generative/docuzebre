@@ -89,10 +89,11 @@ class DynamicModel(BaseModel):
         return json.dumps(self._to_json())
 
     @classmethod
-    def from_json(cls, json_model: str):
-        model = json.loads(json_model)
-        fields = [DynamicField._from_json(field_str) for field_str in model["fields"]]
-        return cls(name=model["name"], fields=fields, examples=model["examples"])
+    def from_json(cls, json_model: str | dict):
+        if json_model is str:
+            json_model = json.loads(json_model)
+        fields = [DynamicField._from_json(field_str) for field_str in json_model["fields"]]
+        return cls(name=json_model["name"], fields=fields, examples=json_model["examples"])
 
     def add_example(self, example):
         self.examples.append(example)
