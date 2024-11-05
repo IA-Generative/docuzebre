@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: PLACEHOLDER_FOR_NAME_-api
+  namespace: PLACEHOLDER_FOR_NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: PLACEHOLDER_FOR_NAME_-api
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: PLACEHOLDER_FOR_NAME_-api
+      annotations:
+        redeploy-hash: PLACEHOLDER_FOR_IMAGE_HASH
+    spec:
+      containers:
+      - name: api
+        image: PLACEHOLDER_FOR_IMAGE
+        imagePullPolicy: Always
+        env:
+          - name: PADDLE_OCR_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: PADDLE_OCR_TOKEN
+          - name: OCR_URL
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OCR_URL
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OPENAI_API_KEY
+          - name: OPENAI_API_BASE
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OPENAI_API_BASE
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: model-data
+          mountPath: /app/models
+      volumes:
+      - name: model-data
+        emptyDir: {}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: registry-secret
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: PLACEHOLDER_FOR_NAME_-api-service
+  namespace: PLACEHOLDER_FOR_NAMESPACE
+spec:
+  selector:
+    app: PLACEHOLDER_FOR_NAME_-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: PLACEHOLDER_FOR_NAME_-api-ingress
+  namespace: PLACEHOLDER_FOR_NAMESPACE
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+spec:
+  ingressClassName: public
+  rules:
+  - host: PLACEHOLDER_FOR_URL
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: PLACEHOLDER_FOR_NAME_-api-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - PLACEHOLDER_FOR_URL
+    secretName: PLACEHOLDER_FOR_URL-tls
