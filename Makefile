@@ -11,9 +11,9 @@ install:
 	sudo apt update && sudo apt install tmux -y
 
 run-streamlit:
-	tmux new-session -d uv run streamlit run front/main.py --server.baseUrlPath=/absproxy/8501/
+	tmux new-session uv run streamlit run front/main.py --server.baseUrlPath=/absproxy/8501/
 
 run-fastapi:
-	tmux new-session -d uv run uvicorn api.app:app --port 5000 --reload
+	tmux new-session uv run uvicorn api.app:app --port 5000 --reload
 
 run: run-fastapi run-streamlit

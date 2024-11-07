@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: PLACEHOLDER_FOR_NAME
-  namespace: PLACEHOLDER_FOR_NAMESPACE
+  name: <SERVICE>-<NAME>
+  namespace: <NAMESPACE>
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: PLACEHOLDER_FOR_NAME
+      app: <SERVICE>-<NAME>
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: PLACEHOLDER_FOR_NAME
+        app: <SERVICE>-<NAME>
       annotations:
-        redeploy-hash: PLACEHOLDER_FOR_IMAGE_HASH
+        redeploy-hash: <IMAGE_HASH>
     spec:
       containers:
       - name: fastapi
-        image: PLACEHOLDER_FOR_IMAGE
+        image: <IMAGE>
         command: ["uv"]
-        args: ["run", "uvicorn", "api.app:app"]
+        args: ["run", "uvicorn", "api.app:app", "--host", "0.0.0.0"]
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -40,11 +40,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: PLACEHOLDER_FOR_NAME
-  namespace: PLACEHOLDER_FOR_NAMESPACE
+  name: <SERVICE>-<NAME>
+  namespace: <NAMESPACE>
 spec:
   selector:
-    app: PLACEHOLDER_FOR_NAME
+    app: <SERVICE>-<NAME>
   ports:
   - protocol: TCP
     port: 80
@@ -60,21 +60,21 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/session-cookie-hash: sha1
     nginx.ingress.kubernetes.io/session-cookie-name: route
-  name: api-PLACEHOLDER_FOR_URL
+  name: <SERVICE>-<NAME>.<URL>
 spec:
   ingressClassName: public
   rules:
-  - host: api.PLACEHOLDER_FOR_URL
+  - host: <SERVICE>-<NAME>.<URL>
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: PLACEHOLDER_FOR_NAME
+            name: <SERVICE>-<NAME>
             port:
               number: 80
   tls:
   - hosts:
-    - api.PLACEHOLDER_FOR_URL
-    secretName: api.PLACEHOLDER_FOR_URL-tls
+    - <SERVICE>-<NAME>.<URL>
+    secretName: <SERVICE>-<NAME>.<URL>-tls

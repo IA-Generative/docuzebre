@@ -9,7 +9,7 @@ import os
 
 
 def display_tab4():
-    return st.components.v1.iframe(f"https://user-astree-940072-0.c0.cloud-pi-native.com/absproxy/5000/docs", height=600, scrolling=True)
+    return st.components.v1.iframe(f"{os.getenv("API_URL")}/{os.getenv("ROOT_PATH", "")}/docs", height=600, scrolling=True)
 
 
 pages = [
