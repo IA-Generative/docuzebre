@@ -20,10 +20,8 @@ spec:
       containers:
       - name: streamlit
         image: <IMAGE>
-        command: ["/bin/bash", "-c"]
-        args: ["uv run streamlit run front/main.py"]
         volumeMounts:
-        - mountPath: "/app"
+        - mountPath: "/app/models"
           name: <NAME>
         imagePullPolicy: Always
         env:
