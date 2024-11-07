@@ -21,7 +21,7 @@ spec:
       - name: fastapi
         image: <IMAGE>
         command: ["/bin/bash", "-c"]
-        args: ["uv", "run", "uvicorn", "api.app:app", "--host", "0.0.0.0"]
+        args: ["uv run uvicorn api.app:app --host 0.0.0.0"]
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
