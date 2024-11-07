@@ -48,7 +48,7 @@ spec:
                 name: app-secrets
                 key: OPENAI_API_BASE
         ports:
-        - containerPort: 8080
+        - containerPort: 8501
       volumes:
       - name: <NAME>
         persistentVolumeClaim:
@@ -70,7 +70,7 @@ spec:
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 8080
+    targetPort: 8501
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
