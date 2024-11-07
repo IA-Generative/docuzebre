@@ -20,6 +20,9 @@ spec:
       containers:
       - name: streamlit
         image: <IMAGE>
+        volumeMounts:
+        - mountPath: "/app"
+          name: <NAME>
         imagePullPolicy: Always
         env:
           - name: API_URL
@@ -46,6 +49,10 @@ spec:
                 key: OPENAI_API_BASE
         ports:
         - containerPort: 8080
+      volumes:
+      - name: <NAME>
+        persistentVolumeClaim:
+          claimName: <NAME>
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: registry-secret
@@ -93,3 +100,15 @@ spec:
   - hosts:
     - <NAME>.<URL>
     secretName: <NAME>.<URL>-tls
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <NAME>
+  namespace: <NAMESPACE>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
