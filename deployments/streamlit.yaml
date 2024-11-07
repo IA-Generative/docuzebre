@@ -21,7 +21,7 @@ spec:
       - name: streamlit
         image: <IMAGE>
         command: ["/bin/bash", "-c"]
-        args: ["uv", run", "streamlit", "run", "front/main.py"]
+        args: ["uv", "run", "streamlit", "run", "front/main.py"]
         volumeMounts:
         - mountPath: "/app"
           name: <NAME>
