@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <SERVICE>-<NAME>
+  namespace: <NAMESPACE>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <SERVICE>-<NAME>
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: <SERVICE>-<NAME>
+      annotations:
+        redeploy-hash: <IMAGE_HASH>
+    spec:
+      containers:
+      - name: fastapi
+        image: <IMAGE>
+        command: ["/bin/bash", "-c"]
+        args: ["uv run uvicorn api.app:app --host 0.0.0.0"]
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: model-data
+          mountPath: /app/models
+      volumes:
+      - name: model-data
+        emptyDir: {}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: registry-secret
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <SERVICE>-<NAME>
+  namespace: <NAMESPACE>
+spec:
+  selector:
+    app: <SERVICE>-<NAME>
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+  name: <SERVICE>-<NAME>.<URL>
+spec:
+  ingressClassName: public
+  rules:
+  - host: <SERVICE>-<NAME>.<URL>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: <SERVICE>-<NAME>
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - <SERVICE>-<NAME>.<URL>
+    secretName: <SERVICE>-<NAME>.<URL>-tls

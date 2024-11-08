@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <SERVICE>-<NAME>
+  namespace: <NAMESPACE>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <SERVICE>-<NAME>
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: <SERVICE>-<NAME>
+      annotations:
+        redeploy-hash: <IMAGE_HASH>
+    spec:
+      containers:
+      - name: streamlit
+        image: <IMAGE>
+        volumeMounts:
+        - mountPath: "/app/models"
+          name: <NAME>
+        imagePullPolicy: Always
+        env:
+          - name: API_URL
+            value: "https://fastapi-<NAME>.<URL>"
+          - name: PADDLE_OCR_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: PADDLE_OCR_TOKEN
+          - name: OCR_URL
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: PADDLE_OCR_URL
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OPENAI_API_KEY
+          - name: OPENAI_API_BASE
+            valueFrom:
+              secretKeyRef:
+                name: app-secrets
+                key: OPENAI_API_BASE
+        ports:
+        - containerPort: 8501
+      volumes:
+      - name: <NAME>
+        persistentVolumeClaim:
+          claimName: <NAME>
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: registry-secret
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <SERVICE>-<NAME>
+  namespace: <NAMESPACE>
+spec:
+  selector:
+    app: <SERVICE>-<NAME>
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8501
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+  name: <NAME>.<URL>
+spec:
+  ingressClassName: public
+  rules:
+  - host: <NAME>.<URL>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: <SERVICE>-<NAME>
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - <NAME>.<URL>
+    secretName: <NAME>.<URL>-tls
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <NAME>
+  namespace: <NAMESPACE>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

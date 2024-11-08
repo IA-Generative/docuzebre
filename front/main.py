@@ -9,7 +9,7 @@ import os
 
 
 def display_tab4():
-    return st.components.v1.iframe(f"https://user-astree-940072-0.c0.cloud-pi-native.com/absproxy/5000/docs", height=600, scrolling=True)
+    return st.components.v1.iframe(f"{os.getenv("API_URL")}/{os.getenv("ROOT_PATH", "")}/docs", height=600, scrolling=True)
 
 
 pages = [
@@ -61,8 +61,10 @@ def upload_file():
     if (f := st.session_state["session_uploader"]) is None:
         return
     loaded_file = json.loads(f.read())
-    for model_str in loaded_file:
-        model = DynamicModel.from_json(model_str)
+    for model_el in loaded_file:
+        if type(model_el) is str:
+            model_el = json.loads(model_el)
+        model = DynamicModel.from_json(model_el)
         st.session_state["models_dict"][model.name] = model
 
 
@@ -91,7 +93,7 @@ with st.sidebar.expander("Importer une session"):
 st.sidebar.download_button(
     label="Télécharger la session",
     data=json.dumps(
-        [model.to_json() for model in st.session_state["models_dict"].values()]
+        [model._to_json() for model in st.session_state["models_dict"].values()]
     ),
     file_name="Sauvegarde_session.json",
 )

@@ -5,7 +5,7 @@ from docuzebre.model_generation import DynamicModel
 from docuzebre.inference import infer
 import json, os
 
-app = FastAPI(root_path=os.getenv("ROOT_PATH", "/"))
+app = FastAPI(root_path=f"/{os.getenv("ROOT_PATH", "")}")
 
 # Directory to store models as JSON files using pathlib
 MODEL_DIR = Path("models")
@@ -89,7 +89,6 @@ async def delete_model(model_name: str):
 @app.post("/extract/{model_name}")
 async def extract_data(model_name: str, text: str):
     try:
-
         result = infer(model_name, app.state.models, text)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during extraction: {str(e)}")

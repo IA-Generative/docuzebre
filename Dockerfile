@@ -19,4 +19,4 @@ RUN uv lock && \
     uv sync --frozen
 
 # Define the default command to run your script
-CMD ["uv", "run", "bash", "run.sh"]
+CMD ["uv", "run", "streamlit", "run", "front/main.py"]

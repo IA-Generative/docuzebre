@@ -57,6 +57,7 @@ def request_ocr(st, file) -> str:
 def load_from_api(st):
     # Load all model names
     try:
+        print(f'{os.environ["API_URL"]}/models')
         response = requests.get(f'{os.environ["API_URL"]}/models')
         # response.raise_for_status()  # Raise an error if the response is unsuccessful
         model_names = response.json().get("models", [])
