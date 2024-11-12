@@ -1,11 +1,55 @@
 version: '3.8'
 
 services:
-  app:
+  fastapi:
+    container_name: fastapi
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./api  # Uses Dockerfile in ./api folder
+    command: /bin/bash -c "uv run uvicorn api.app:app --host 0.0.0.0"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
+      - "traefik.http.routers.fastapi.entrypoints=web"
+      - "traefik.http.services.fastapi.loadbalancer.server.port=8000"
+    networks:
+      - app-network
     env_file:
       - .env
+    volumes:
+      - ./api:/app  # Mounts local ./api folder to /app in the container
+
+  streamlit:
+    container_name: streamlit
+    build:
+      context: ./front  # Uses Dockerfile in ./front folder
+    env_file:
+      - .env
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.streamlit.rule=Host(`streamlit.localhost`)"
+      - "traefik.http.routers.streamlit.entrypoints=web"
+      - "traefik.http.services.streamlit.loadbalancer.server.port=8501"
+    networks:
+      - app-network
+    volumes:
+      - ./front:/app  # Mounts local ./front folder to /app in the container
+
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
     ports:
-      - "80:8080" # Adapter les ports selon les besoins
+      - "80:80"
+      - "8080:8080"  # Optional: Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
