@@ -64,7 +64,7 @@ jobs:
 
   deploy:
     needs: publish-docker-image
-    runs-on: ${{ env.RUNNER }}
+    runs-on: arc-runner
     timeout-minutes: 10
     steps:
       - name: Wait for the image to be saved in the registry
