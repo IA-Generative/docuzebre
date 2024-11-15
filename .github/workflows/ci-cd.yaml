@@ -20,7 +20,7 @@ env:
 jobs:
 
   publish-docker-image:
-    runs-on: ${{ env.RUNNER }}
+    runs-on: arc-runner
     timeout-minutes: 10
     permissions:
       contents: read
