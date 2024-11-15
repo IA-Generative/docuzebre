@@ -5,11 +5,11 @@ on:
     branches:
       - main
       - staging
-    paths:
-      - 'docuzebre/**'
-      - 'front/**'
-      - 'api/**'
-      - 'Dockerfile'
+#    paths:
+#      - 'docuzebre/**'
+#      - 'front/**'
+#      - 'api/**'
+#      - 'Dockerfile'
 env:
   REGISTRY: registry.numerique-interieur.com
   IMAGE_NAME: ${{ github.repository }}
