@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit_dsfr as stdsfr
 from tab_model_generation import display_tab as display_tab1
 from tab_example import display_tab as display_tab2
 from tab_tryout import display_tab as display_tab3
@@ -84,7 +85,7 @@ with st.sidebar.expander("Importer une session"):
         type="json"
     )
 
-    st.button(
+    stdsfr.button(
         label="Charger depuis le serveur",
         on_click=lambda: load_from_api(st),
         key="session_api")
@@ -104,5 +105,6 @@ pg = st.navigation([
     st.Page(page["function"], title=page["title"], icon=page["icon"], url_path=f"/{page["title"].replace(' ', '-').lower()}" )
     for page in pages
 ])
+
 
 pg.run()
